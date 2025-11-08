@@ -1,0 +1,1182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#667eea">
+    <link rel="apple-touch-icon" href="/icon-192.png">
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEET PG Accountability Tracker</title>
+    <style>
+        :root {
+            --color-primary: #2563eb;
+            --color-primary-hover: #1d4ed8;
+            --color-success: #10b981;
+            --color-warning: #f59e0b;
+            --color-danger: #ef4444;
+            --color-bg: #f8fafc;
+            --color-card: #ffffff;
+            --color-text: #1e293b;
+            --color-text-secondary: #64748b;
+            --color-border: #e2e8f0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.95;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+
+        .card h2 {
+            color: var(--color-text);
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--color-text);
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--color-border);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        input:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .btn {
+            background: var(--color-primary);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+            margin-top: 8px;
+        }
+
+        .btn:hover {
+            background: var(--color-primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+
+        .btn-secondary {
+            background: var(--color-text-secondary);
+        }
+
+        .btn-secondary:hover {
+            background: #475569;
+        }
+
+        .mood-selector {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .mood-btn {
+            padding: 12px;
+            border: 2px solid var(--color-border);
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 2rem;
+            transition: all 0.3s;
+        }
+
+        .mood-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .mood-btn.selected {
+            border-color: var(--color-primary);
+            background: rgba(37, 99, 235, 0.1);
+            transform: scale(1.05);
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .log-entry {
+            background: var(--color-bg);
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            border-left: 4px solid var(--color-primary);
+        }
+
+        .log-date {
+            font-weight: 600;
+            color: var(--color-text);
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .log-content {
+            color: var(--color-text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .log-mood {
+            font-size: 1.5rem;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        #logs-container {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .subject-input {
+            display: grid;
+            grid-template-columns: 2fr 1fr auto;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .subsection-item {
+            padding-left: 20px;
+            margin-top: 8px;
+            border-left: 2px solid var(--color-border);
+        }
+
+        .subject-item {
+            margin-bottom: 16px;
+            padding: 12px;
+            background: var(--color-bg);
+            border-radius: 8px;
+        }
+
+        .edit-input {
+            width: 60px;
+            padding: 4px 8px;
+            border: 1px solid var(--color-border);
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+
+        .progress-bar {
+            background: var(--color-bg);
+            height: 24px;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .time-period {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .period-btn {
+            flex: 1;
+            padding: 8px;
+            border: 2px solid var(--color-border);
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .period-btn.active {
+            border-color: var(--color-primary);
+            background: rgba(37, 99, 235, 0.1);
+            color: var(--color-primary);
+        }
+
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            .mood-selector {
+                grid-template-columns: repeat(5, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 NEET PG Accountability Tracker</h1>
+            <p>Track your preparation journey, mood, and stay motivated!</p>
+            
+            <!-- Countdown Timers -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 24px; max-width: 800px; margin-left: auto; margin-right: auto;">
+                <!-- NEET PG Countdown -->
+                <div style="background: rgba(255, 255, 255, 0.95); border-radius: 16px; padding: 20px; box-shadow: 0 8px 24px rgba(0,0,0,0.2);">
+                    <h3 style="margin: 0 0 12px 0; color: var(--color-text); font-size: 1.3rem;">⏱️ NEET PG Countdown</h3>
+                    <div id="neetpgCountdown" style="font-size: 2.5rem; font-weight: bold; color: var(--color-primary); margin: 12px 0;">--</div>
+                    <div style="display: flex; gap: 8px; margin-top: 12px;">
+                        <input type="date" id="neetpgDate" style="flex: 1; padding: 8px; border: 2px solid var(--color-border); border-radius: 8px; font-size: 0.9rem;">
+                        <button onclick="setExamDate('neetpg')" style="padding: 8px 16px; background: var(--color-primary); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">Set Date</button>
+                    </div>
+                </div>
+                
+                <!-- INI-CET Countdown -->
+                <div style="background: rgba(255, 255, 255, 0.95); border-radius: 16px; padding: 20px; box-shadow: 0 8px 24px rgba(0,0,0,0.2);">
+                    <h3 style="margin: 0 0 12px 0; color: var(--color-text); font-size: 1.3rem;">⏱️ INI-CET Countdown</h3>
+                    <div id="inicetCountdown" style="font-size: 2.5rem; font-weight: bold; color: #764ba2; margin: 12px 0;">--</div>
+                    <div style="display: flex; gap: 8px; margin-top: 12px;">
+                        <input type="date" id="inicetDate" style="flex: 1; padding: 8px; border: 2px solid var(--color-border); border-radius: 8px; font-size: 0.9rem;">
+                        <button onclick="setExamDate('inicet')" style="padding: 8px 16px; background: #764ba2; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">Set Date</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid">
+            <!-- Daily Log Card -->
+            <div class="card">
+                <h2>📝 Daily Log</h2>
+                <div class="form-group">
+                    <label>Time of Day</label>
+                    <select id="timeOfDay">
+                        <option value="morning">🌅 Morning</option>
+                        <option value="evening">🌙 Evening</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>How are you feeling today?</label>
+                    <div class="mood-selector">
+                        <button class="mood-btn" data-mood="😢" title="Very Low">😢</button>
+                        <button class="mood-btn" data-mood="😕" title="Low">😕</button>
+                        <button class="mood-btn" data-mood="😐" title="Neutral">😐</button>
+                        <button class="mood-btn" data-mood="🙂" title="Good">🙂</button>
+                        <button class="mood-btn" data-mood="😄" title="Excellent">😄</button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Hours Studied Today</label>
+                    <input type="number" id="hoursStudied" min="0" max="24" step="0.5" placeholder="e.g., 6.5">
+                </div>
+
+                <div class="form-group">
+                    <label>Topics Covered</label>
+                    <textarea id="topicsCovered" placeholder="List the topics you studied today..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Challenges Faced</label>
+                    <textarea id="challenges" placeholder="Any difficulties or obstacles?"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Tomorrow's Goals</label>
+                    <textarea id="goals" placeholder="What do you plan to achieve tomorrow?"></textarea>
+                </div>
+
+                <button class="btn" onclick="saveLog()">💾 Save Log Entry</button>
+            </div>
+
+            <!-- Statistics Card -->
+            <div class="card">
+                <h2>📊 Your Progress</h2>
+                <div class="time-period">
+                    <button class="period-btn active" onclick="updatePeriod('week')">Week</button>
+                    <button class="period-btn" onclick="updatePeriod('month')">Month</button>
+                    <button class="period-btn" onclick="updatePeriod('all')">All Time</button>
+                </div>
+
+                <div class="stats">
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalHours">0</div>
+                        <div class="stat-label">Total Hours</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalDays">0</div>
+                        <div class="stat-label">Days Logged</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="avgHours">0</div>
+                        <div class="stat-label">Avg Hours/Day</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="currentStreak">0</div>
+                        <div class="stat-label">Day Streak 🔥</div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 20px;">
+                    <label>Study Target Progress (Click to Edit Targets)</label>
+                    
+                    <div style="margin-bottom: 12px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span style="font-size: 0.9rem; font-weight: 500;">Today</span>
+                                <input type="number" id="dailyTarget" value="10" min="1" max="24" 
+                                       style="width: 50px; padding: 2px 6px; border: 1px solid var(--color-border); border-radius: 4px; font-size: 0.85rem;"
+                                       onchange="updateTargets()" />
+                                <span style="font-size: 0.85rem;">hrs target</span>
+                            </div>
+                            <span style="font-size: 0.9rem; font-weight: 600;" id="todayProgressText">0 / 10 hrs</span>
+                        </div>
+                        <div class="progress-bar" style="height: 20px;">
+                            <div class="progress-fill" id="todayProgressBar" style="width: 0%; font-size: 0.8rem;">0%</div>
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 12px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span style="font-size: 0.9rem; font-weight: 500;">This Week</span>
+                                <input type="number" id="weeklyTarget" value="70" min="1" max="168" 
+                                       style="width: 50px; padding: 2px 6px; border: 1px solid var(--color-border); border-radius: 4px; font-size: 0.85rem;"
+                                       onchange="updateTargets()" />
+                                <span style="font-size: 0.85rem;">hrs target</span>
+                            </div>
+                            <span style="font-size: 0.9rem; font-weight: 600;" id="weekProgressText">0 / 70 hrs</span>
+                        </div>
+                        <div class="progress-bar" style="height: 20px;">
+                            <div class="progress-fill" id="weekProgressBar" style="width: 0%; font-size: 0.8rem;">0%</div>
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 12px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span style="font-size: 0.9rem; font-weight: 500;">This Month</span>
+                                <input type="number" id="monthlyTarget" value="280" min="1" max="744" 
+                                       style="width: 60px; padding: 2px 6px; border: 1px solid var(--color-border); border-radius: 4px; font-size: 0.85rem;"
+                                       onchange="updateTargets()" />
+                                <span style="font-size: 0.85rem;">hrs target</span>
+                            </div>
+                            <span style="font-size: 0.9rem; font-weight: 600;" id="monthProgressText">0 / 280 hrs</span>
+                        </div>
+                        <div class="progress-bar" style="height: 20px;">
+                            <div class="progress-fill" id="monthProgressBar" style="width: 0%; font-size: 0.8rem;">0%</div>
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 12px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span style="font-size: 0.9rem; font-weight: 500;">Total</span>
+                                <input type="number" id="totalTarget" value="2070" min="1" 
+                                       style="width: 70px; padding: 2px 6px; border: 1px solid var(--color-border); border-radius: 4px; font-size: 0.85rem;"
+                                       onchange="updateTargets()" />
+                                <span style="font-size: 0.85rem;">hrs target</span>
+                            </div>
+                            <span style="font-size: 0.9rem; font-weight: 600;" id="totalProgressText">0 / 2070 hrs</span>
+                        </div>
+                        <div class="progress-bar" style="height: 20px;">
+                            <div class="progress-fill" id="totalProgressBar" style="width: 0%; font-size: 0.8rem;">0%</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 20px;">
+                    <h3 style="margin-bottom: 12px; font-size: 1.1rem;">Subject Tracker</h3>
+                    <div id="subjectList"></div>
+                    <div class="subject-input">
+                        <input type="text" id="subjectName" placeholder="Subject name">
+                        <input type="number" id="subjectProgress" min="0" max="100" placeholder="Progress %">
+                        <button class="btn" onclick="addSubject()" style="width: auto; padding: 12px 16px;">➕</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+<!-- 🐾 Daily Cute Dog Image Card (robust, bigger) -->
+<div class="card" style="text-align: center;">
+    <h2>🐶 Daily Study Buddy</h2>
+
+    <!-- fallback shown immediately -->
+    <img id="dogImage"
+         src="https://i.imgur.com/lQ7K8kD.png"
+         alt="Cute study dog"
+         style="
+            width: 100%;
+            max-width: 1000px;    /* ~2.5x of 400px */
+            max-height: 720px;    /* ~1.8x of 400px height ~720px */
+            height: auto;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+            margin: 20px auto;
+            object-fit: cover;
+            display: block;
+        " />
+
+    <p style="color: var(--color-text-secondary); font-size: 1rem;">
+        Here's your fluffy motivation for today 🐕💖 — come back tomorrow for a new buddy!
+    </p>
+</div>
+
+        <div class="card">
+            <h2>📚 Previous Logs</h2>
+            <div style="margin-bottom: 16px; display: flex; gap: 8px;">
+                <button class="btn btn-secondary" onclick="deleteAllLogs()" style="flex: 1;">🗑️ Delete All Logs</button>
+            </div>
+            <div id="logs-container"></div>
+        </div>
+    </div>
+
+<script>
+    (function() {
+        const IMG_KEY_URL = "dog_url";
+        const IMG_KEY_DATE = "dog_last_date";
+        const FALLBACK = "https://i.imgur.com/lQ7K8kD.png";
+        const API = "https://dog.ceo/api/breeds/image/random";
+        const imgEl = document.getElementById("dogImage");
+
+        // Ensure fallback always recovers on load error
+        imgEl.onerror = () => { imgEl.src = FALLBACK; };
+
+        async function loadDailyDog() {
+            const today = new Date().toDateString();
+            const lastFetchedDate = localStorage.getItem(IMG_KEY_DATE);
+            const savedDogUrl = localStorage.getItem(IMG_KEY_URL);
+
+            // Use cached URL if fetched earlier today
+            if (savedDogUrl && lastFetchedDate === today) {
+                imgEl.src = savedDogUrl;
+                return;
+            }
+
+            // Attempt to fetch a fresh dog image
+            try {
+                // Some local file:// pages may block fetch — this will throw in that case
+                const resp = await fetch(API, { cache: "no-store" });
+                if (!resp.ok) throw new Error("Network response was not OK");
+
+                const data = await resp.json();
+                if (data && data.status === "success" && data.message) {
+                    // set image (triggers onerror fallback if image fails to load)
+                    imgEl.src = data.message;
+                    localStorage.setItem(IMG_KEY_URL, data.message);
+                    localStorage.setItem(IMG_KEY_DATE, today);
+                } else {
+                    // API returned unexpected payload — keep fallback
+                    imgEl.src = FALLBACK;
+                }
+            } catch (err) {
+                console.warn("Could not fetch dog image:", err);
+                // Keep fallback image if fetch fails
+                imgEl.src = FALLBACK;
+            }
+        }
+
+        // Run on load
+        window.addEventListener("load", loadDailyDog);
+    })();
+</script>
+
+
+    <script>
+        let selectedMood = '';
+        let currentPeriod = 'week';
+        let logs = [];
+        let subjects = [];
+
+        // Load data from localStorage
+        function loadData() {
+            const savedLogs = localStorage.getItem('neetpg_logs');
+            const savedSubjects = localStorage.getItem('neetpg_subjects');
+            
+            if (savedLogs) logs = JSON.parse(savedLogs);
+            if (savedSubjects) subjects = JSON.parse(savedSubjects);
+            
+            // Load saved targets
+            const savedDailyTarget = localStorage.getItem('neetpg_daily_target');
+            const savedWeeklyTarget = localStorage.getItem('neetpg_weekly_target');
+            const savedMonthlyTarget = localStorage.getItem('neetpg_monthly_target');
+            const savedTotalTarget = localStorage.getItem('neetpg_total_target');
+            
+            if (savedDailyTarget) document.getElementById('dailyTarget').value = savedDailyTarget;
+            if (savedWeeklyTarget) document.getElementById('weeklyTarget').value = savedWeeklyTarget;
+            if (savedMonthlyTarget) document.getElementById('monthlyTarget').value = savedMonthlyTarget;
+            if (savedTotalTarget) document.getElementById('totalTarget').value = savedTotalTarget;
+            
+            updateStats();
+            displayLogs();
+            displaySubjects();
+            
+            // Load exam dates and start countdowns
+            loadExamDates();
+            updateCountdowns();
+            setInterval(updateCountdowns, 1000);
+        }
+
+        // Mood selection
+        document.querySelectorAll('.mood-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('selected'));
+                this.classList.add('selected');
+                selectedMood = this.dataset.mood;
+            });
+        });
+
+        // Save log entry
+        function saveLog() {
+            const timeOfDay = document.getElementById('timeOfDay').value;
+            const hoursStudied = parseFloat(document.getElementById('hoursStudied').value) || 0;
+            const topicsCovered = document.getElementById('topicsCovered').value;
+            const challenges = document.getElementById('challenges').value;
+            const goals = document.getElementById('goals').value;
+
+            if (!selectedMood) {
+                alert('Please select your mood!');
+                return;
+            }
+
+            if (hoursStudied === 0) {
+                alert('Please enter hours studied!');
+                return;
+            }
+
+            const log = {
+                date: new Date().toISOString(),
+                timeOfDay,
+                mood: selectedMood,
+                hoursStudied,
+                topicsCovered,
+                challenges,
+                goals
+            };
+
+            logs.unshift(log);
+            localStorage.setItem('neetpg_logs', JSON.stringify(logs));
+
+            // Clear form
+            document.getElementById('hoursStudied').value = '';
+            document.getElementById('topicsCovered').value = '';
+            document.getElementById('challenges').value = '';
+            document.getElementById('goals').value = '';
+            document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('selected'));
+            selectedMood = '';
+
+            updateStats();
+            displayLogs();
+
+            alert('✅ Log saved successfully!');
+        }
+
+        // Update statistics
+        function updateStats() {
+            const now = new Date();
+            let filteredLogs = logs;
+
+            if (currentPeriod === 'week') {
+                const weekAgo = new Date(now - 7 * 24 * 60 * 60 * 1000);
+                filteredLogs = logs.filter(log => new Date(log.date) >= weekAgo);
+            } else if (currentPeriod === 'month') {
+                const monthAgo = new Date(now - 30 * 24 * 60 * 60 * 1000);
+                filteredLogs = logs.filter(log => new Date(log.date) >= monthAgo);
+            }
+
+            const totalHours = filteredLogs.reduce((sum, log) => sum + log.hoursStudied, 0);
+            const uniqueDays = new Set(filteredLogs.map(log => new Date(log.date).toDateString())).size;
+            const avgHours = uniqueDays > 0 ? (totalHours / uniqueDays).toFixed(1) : 0;
+
+            document.getElementById('totalHours').textContent = totalHours.toFixed(1);
+            document.getElementById('totalDays').textContent = uniqueDays;
+            document.getElementById('avgHours').textContent = avgHours;
+
+            // Calculate streak
+            const streak = calculateStreak();
+            document.getElementById('currentStreak').textContent = streak;
+
+            // Update all 4 progress bars
+            updateAllProgressBars();
+        }
+
+        // Calculate study streak
+        function calculateStreak() {
+            if (logs.length === 0) return 0;
+
+            const today = new Date().toDateString();
+            const sortedDates = [...new Set(logs.map(log => new Date(log.date).toDateString()))].sort((a, b) => new Date(b) - new Date(a));
+
+            let streak = 0;
+            let checkDate = new Date();
+
+            for (const dateStr of sortedDates) {
+                const logDate = new Date(dateStr);
+                const diffDays = Math.floor((checkDate - logDate) / (1000 * 60 * 60 * 24));
+
+                if (diffDays <= 1) {
+                    streak++;
+                    checkDate = logDate;
+                } else {
+                    break;
+                }
+            }
+
+            return streak;
+        }
+
+        // Update targets
+        function updateTargets() {
+            const dailyTarget = parseInt(document.getElementById('dailyTarget').value) || 10;
+            const weeklyTarget = parseInt(document.getElementById('weeklyTarget').value) || 70;
+            const monthlyTarget = parseInt(document.getElementById('monthlyTarget').value) || 280;
+            const totalTarget = parseInt(document.getElementById('totalTarget').value) || 2070;
+            
+            localStorage.setItem('neetpg_daily_target', dailyTarget);
+            localStorage.setItem('neetpg_weekly_target', weeklyTarget);
+            localStorage.setItem('neetpg_monthly_target', monthlyTarget);
+            localStorage.setItem('neetpg_total_target', totalTarget);
+            
+            updateAllProgressBars();
+        }
+
+        // Update all progress bars
+        function updateAllProgressBars() {
+            const now = new Date();
+            const today = now.toDateString();
+            
+            const dailyTarget = parseInt(document.getElementById('dailyTarget').value) || 10;
+            const weeklyTarget = parseInt(document.getElementById('weeklyTarget').value) || 70;
+            const monthlyTarget = parseInt(document.getElementById('monthlyTarget').value) || 280;
+            const totalTarget = parseInt(document.getElementById('totalTarget').value) || 2070;
+            
+            // Today's progress
+            const todayLogs = logs.filter(log => new Date(log.date).toDateString() === today);
+            const todayHours = todayLogs.reduce((sum, log) => sum + log.hoursStudied, 0);
+            const todayPercent = Math.min(100, (todayHours / dailyTarget * 100).toFixed(1));
+            document.getElementById('todayProgressBar').style.width = todayPercent + '%';
+            document.getElementById('todayProgressBar').textContent = todayPercent + '%';
+            document.getElementById('todayProgressText').textContent = `${todayHours.toFixed(1)} / ${dailyTarget} hrs`;
+            
+            // Week's progress
+            const weekAgo = new Date(now - 7 * 24 * 60 * 60 * 1000);
+            const weekLogs = logs.filter(log => new Date(log.date) >= weekAgo);
+            const weekHours = weekLogs.reduce((sum, log) => sum + log.hoursStudied, 0);
+            const weekPercent = Math.min(100, (weekHours / weeklyTarget * 100).toFixed(1));
+            document.getElementById('weekProgressBar').style.width = weekPercent + '%';
+            document.getElementById('weekProgressBar').textContent = weekPercent + '%';
+            document.getElementById('weekProgressText').textContent = `${weekHours.toFixed(1)} / ${weeklyTarget} hrs`;
+            
+            // Month's progress
+            const monthAgo = new Date(now - 30 * 24 * 60 * 60 * 1000);
+            const monthLogs = logs.filter(log => new Date(log.date) >= monthAgo);
+            const monthHours = monthLogs.reduce((sum, log) => sum + log.hoursStudied, 0);
+            const monthPercent = Math.min(100, (monthHours / monthlyTarget * 100).toFixed(1));
+            document.getElementById('monthProgressBar').style.width = monthPercent + '%';
+            document.getElementById('monthProgressBar').textContent = monthPercent + '%';
+            document.getElementById('monthProgressText').textContent = `${monthHours.toFixed(1)} / ${monthlyTarget} hrs`;
+            
+            // Total progress
+            const totalHours = logs.reduce((sum, log) => sum + log.hoursStudied, 0);
+            const totalPercent = Math.min(100, (totalHours / totalTarget * 100).toFixed(1));
+            document.getElementById('totalProgressBar').style.width = totalPercent + '%';
+            document.getElementById('totalProgressBar').textContent = totalPercent + '%';
+            document.getElementById('totalProgressText').textContent = `${totalHours.toFixed(1)} / ${totalTarget} hrs`;
+        }
+
+        // Display logs
+        function displayLogs() {
+            const container = document.getElementById('logs-container');
+            
+            if (logs.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: var(--color-text-secondary); padding: 20px;">No logs yet. Start tracking your preparation!</p>';
+                return;
+            }
+
+            container.innerHTML = logs.slice(0, 10).map((log, index) => {
+                const date = new Date(log.date);
+                const formattedDate = date.toLocaleDateString('en-IN', { 
+                    weekday: 'short', 
+                    year: 'numeric', 
+                    month: 'short', 
+                    day: 'numeric' 
+                });
+                const formattedTime = date.toLocaleTimeString('en-IN', { 
+                    hour: '2-digit', 
+                    minute: '2-digit' 
+                });
+
+                return `
+                    <div class="log-entry">
+                        <div class="log-date">
+                            <span>${formattedDate} - ${log.timeOfDay}</span>
+                            <div>
+                                <span class="log-mood">${log.mood}</span>
+                                <button onclick="deleteLog(${index})" style="background: none; border: none; cursor: pointer; color: var(--color-danger); margin-left: 12px; font-size: 1.3rem; padding: 0;" title="Delete this log">🗑️</button>
+                            </div>
+                        </div>
+                        <div class="log-content">
+                            <strong>⏱️ ${log.hoursStudied}h studied</strong><br>
+                            <strong>📖 Topics:</strong> ${log.topicsCovered || 'Not specified'}<br>
+                            ${log.challenges ? `<strong>⚠️ Challenges:</strong> ${log.challenges}<br>` : ''}
+                            ${log.goals ? `<strong>🎯 Goals:</strong> ${log.goals}` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Subject management
+        function addSubject() {
+            const name = document.getElementById('subjectName').value.trim();
+            const progress = parseInt(document.getElementById('subjectProgress').value) || 0;
+
+            if (!name) {
+                alert('Please enter subject name!');
+                return;
+            }
+
+            subjects.push({ name, progress, subsections: [] });
+            localStorage.setItem('neetpg_subjects', JSON.stringify(subjects));
+            
+            document.getElementById('subjectName').value = '';
+            document.getElementById('subjectProgress').value = '';
+            displaySubjects();
+        }
+
+        function displaySubjects() {
+            const container = document.getElementById('subjectList');
+            
+            if (subjects.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: var(--color-text-secondary); font-size: 0.9rem; margin-bottom: 12px;">Add subjects to track progress</p>';
+                return;
+            }
+
+            container.innerHTML = subjects.map((subject, index) => {
+                const subsectionsHTML = subject.subsections && subject.subsections.length > 0 
+                    ? subject.subsections.map((sub, subIndex) => `
+                        <div class="subsection-item" style="margin-top: 8px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                                <span style="font-size: 0.9rem;">↳ ${sub.name}</span>
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <input type="number" class="edit-input" value="${sub.progress}" min="0" max="100" 
+                                           onchange="updateSubsectionProgress(${index}, ${subIndex}, this.value)" />
+                                    <span style="font-size: 0.85rem;">%</span>
+                                    <button onclick="removeSubsection(${index}, ${subIndex})" 
+                                            style="background: none; border: none; cursor: pointer; color: var(--color-danger); font-size: 1rem;">×</button>
+                                </div>
+                            </div>
+                            <div class="progress-bar" style="height: 6px;">
+                                <div class="progress-fill" style="width: ${sub.progress}%"></div>
+                            </div>
+                        </div>
+                    `).join('')
+                    : '';
+
+                return `
+                    <div class="subject-item">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <span style="font-weight: 600; font-size: 1rem;">${subject.name}</span>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <input type="number" class="edit-input" value="${subject.progress}" min="0" max="100" 
+                                       onchange="updateSubjectProgress(${index}, this.value)" />
+                                <span style="font-weight: 600; color: var(--color-primary);">%</span>
+                                <button onclick="removeSubject(${index})" 
+                                        style="background: none; border: none; cursor: pointer; color: var(--color-danger); font-size: 1.2rem;">×</button>
+                            </div>
+                        </div>
+                        <div class="progress-bar" style="height: 10px; margin-bottom: 12px;">
+                            <div class="progress-fill" style="width: ${subject.progress}%"></div>
+                        </div>
+                        
+                        ${subsectionsHTML}
+                        
+                        <div style="display: flex; gap: 4px; margin-top: 12px;">
+                            <input type="text" id="subsection-${index}" placeholder="Add topic/subsection" 
+                                   style="flex: 1; padding: 6px 10px; font-size: 0.85rem; border: 1px solid var(--color-border); border-radius: 6px;" />
+                            <input type="number" id="subsection-progress-${index}" placeholder="%" min="0" max="100"
+                                   style="width: 60px; padding: 6px 8px; font-size: 0.85rem; border: 1px solid var(--color-border); border-radius: 6px;" />
+                            <button onclick="addSubsection(${index})" 
+                                    style="padding: 6px 12px; background: var(--color-secondary); border: none; border-radius: 6px; cursor: pointer; font-size: 0.85rem;">+ Topic</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function updateSubjectProgress(index, value) {
+            subjects[index].progress = Math.min(100, Math.max(0, parseInt(value) || 0));
+            localStorage.setItem('neetpg_subjects', JSON.stringify(subjects));
+            displaySubjects();
+        }
+
+        function addSubsection(subjectIndex) {
+            const nameInput = document.getElementById(`subsection-${subjectIndex}`);
+            const progressInput = document.getElementById(`subsection-progress-${subjectIndex}`);
+            const name = nameInput.value.trim();
+            const progress = parseInt(progressInput.value) || 0;
+
+            if (!name) {
+                alert('Please enter topic/subsection name!');
+                return;
+            }
+
+            if (!subjects[subjectIndex].subsections) {
+                subjects[subjectIndex].subsections = [];
+            }
+
+            subjects[subjectIndex].subsections.push({ name, progress });
+            localStorage.setItem('neetpg_subjects', JSON.stringify(subjects));
+            
+            nameInput.value = '';
+            progressInput.value = '';
+            displaySubjects();
+        }
+
+        function updateSubsectionProgress(subjectIndex, subsectionIndex, value) {
+            subjects[subjectIndex].subsections[subsectionIndex].progress = Math.min(100, Math.max(0, parseInt(value) || 0));
+            localStorage.setItem('neetpg_subjects', JSON.stringify(subjects));
+            displaySubjects();
+        }
+
+        function removeSubsection(subjectIndex, subsectionIndex) {
+            if (confirm('Remove this topic/subsection?')) {
+                subjects[subjectIndex].subsections.splice(subsectionIndex, 1);
+                localStorage.setItem('neetpg_subjects', JSON.stringify(subjects));
+                displaySubjects();
+            }
+        }
+
+        function removeSubject(index) {
+            if (confirm('Remove this subject and all its topics?')) {
+                subjects.splice(index, 1);
+                localStorage.setItem('neetpg_subjects', JSON.stringify(subjects));
+                displaySubjects();
+            }
+        }
+
+        function deleteLog(index) {
+            if (confirm('Delete this log entry?')) {
+                logs.splice(index, 1);
+                localStorage.setItem('neetpg_logs', JSON.stringify(logs));
+                updateStats();
+                displayLogs();
+            }
+        }
+
+        function deleteAllLogs() {
+            if (confirm('Are you sure you want to delete ALL log entries? This cannot be undone!')) {
+                logs = [];
+                localStorage.setItem('neetpg_logs', JSON.stringify(logs));
+                updateStats();
+                displayLogs();
+                alert('✅ All logs deleted successfully!');
+            }
+        }
+
+        // Period selection
+        function updatePeriod(period) {
+            currentPeriod = period;
+            document.querySelectorAll('.period-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            updateStats();
+        }
+
+        // Exam countdown functions
+        function loadExamDates() {
+            const neetpgDate = localStorage.getItem('neetpg_examdate');
+            const inicetDate = localStorage.getItem('inicet_examdate');
+            
+            if (neetpgDate) {
+                document.getElementById('neetpgDate').value = neetpgDate;
+            } else {
+                // Default to June 10, 2025
+                const defaultDate = '2025-06-10';
+                document.getElementById('neetpgDate').value = defaultDate;
+                localStorage.setItem('neetpg_examdate', defaultDate);
+            }
+            
+            if (inicetDate) {
+                document.getElementById('inicetDate').value = inicetDate;
+            }
+        }
+
+        function setExamDate(exam) {
+            const dateInput = document.getElementById(`${exam}Date`);
+            const date = dateInput.value;
+            
+            if (!date) {
+                alert('Please select a date!');
+                return;
+            }
+            
+            localStorage.setItem(`${exam}_examdate`, date);
+            updateCountdowns();
+            alert(`✅ ${exam.toUpperCase()} exam date set successfully!`);
+        }
+
+        function updateCountdowns() {
+            updateCountdown('neetpg');
+            updateCountdown('inicet');
+        }
+
+        function updateCountdown(exam) {
+            const dateStr = localStorage.getItem(`${exam}_examdate`);
+            const countdownElement = document.getElementById(`${exam}Countdown`);
+            
+            if (!dateStr) {
+                countdownElement.textContent = 'Set Date';
+                return;
+            }
+            
+            const examDate = new Date(dateStr + 'T00:00:00');
+            const now = new Date();
+            const diff = examDate - now;
+            
+            if (diff < 0) {
+                countdownElement.textContent = 'Exam Passed';
+                countdownElement.style.fontSize = '1.8rem';
+                return;
+            }
+            
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+            
+            countdownElement.innerHTML = `
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; font-size: 1.2rem;">
+                    <div style="text-align: center;">
+                        <div style="font-size: 2rem; font-weight: bold;">${days}</div>
+                        <div style="font-size: 0.7rem; opacity: 0.7;">DAYS</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 2rem; font-weight: bold;">${hours.toString().padStart(2, '0')}</div>
+                        <div style="font-size: 0.7rem; opacity: 0.7;">HRS</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 2rem; font-weight: bold;">${minutes.toString().padStart(2, '0')}</div>
+                        <div style="font-size: 0.7rem; opacity: 0.7;">MIN</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 2rem; font-weight: bold;">${seconds.toString().padStart(2, '0')}</div>
+                        <div style="font-size: 0.7rem; opacity: 0.7;">SEC</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // ChatGPT integration
+        let chatMessages = [];
+        const API_KEY =;
+
+        async function sendChatMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            // Add user message to chat
+            addChatMessage('You', message, 'user');
+            input.value = '';
+            
+            // Add thinking message
+            const thinkingId = Date.now();
+            addChatMessage('ChatGPT', 'Thinking...', 'bot', thinkingId);
+            
+            try {
+                // Prepare context with user's study data
+                const context = `You are a helpful NEET PG study assistant for medical students in India. 
+
+User's Current Stats:
+- Total study hours: ${logs.reduce((sum, log) => sum + log.hoursStudied, 0).toFixed(1)} hours
+- Study streak: ${calculateStreak()} days
+- Subjects tracking: ${subjects.map(s => `${s.name} (${s.progress}% complete)`).join(', ')}
+
+Recent activity: ${logs.slice(0, 3).map(l => `Studied ${l.hoursStudied}h on ${new Date(l.date).toLocaleDateString()}`).join('; ')}
+
+Provide encouraging, specific, and actionable advice for NEET PG preparation.`;
+
+                chatMessages.push({role: "system", content: context});
+                chatMessages.push({role: "user", content: message});
+                
+                const response = await fetch('http://localhost:8000/api/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        model: "gpt-3.5-turbo",
+                        messages: chatMessages,
+                        max_tokens: 500,
+                        temperature: 0.7
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`Server error: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                // Remove thinking message
+                removeChatMessage(thinkingId);
+                
+                if (data.choices && data.choices[0]) {
+                    const reply = data.choices[0].message.content.trim();
+                    addChatMessage('ChatGPT', reply, 'bot');
+                    chatMessages.push({role: "assistant", content: reply});
+                } else {
+                    throw new Error('No response from ChatGPT');
+                }
+                
+            } catch (error) {
+                removeChatMessage(thinkingId);
+                addChatMessage('ChatGPT', `❌ Error: ${error.message}. Make sure the Python server is running on port 8000.`, 'bot');
+                console.error('Chat error:', error);
+            }
+        }
+
+        function addChatMessage(sender, text, type, id) {
+            const container = document.getElementById('chatContainer');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'chat-message ' + type + '-message';
+            messageDiv.style.cssText = 'margin-bottom: 12px; padding: 12px; background: white; border-radius: 8px; border-left: 4px solid ' + (type === 'user' ? 'var(--color-success)' : 'var(--color-primary)');
+            if (id) messageDiv.id = 'msg-' + id;
+            
+            messageDiv.innerHTML = `
+                <strong style="color: ${type === 'user' ? 'var(--color-success)' : 'var(--color-primary)'};">${sender}:</strong>
+                <p style="margin: 8px 0 0 0; color: var(--color-text-secondary); white-space: pre-wrap;">${text}</p>
+            `;
+            
+            container.appendChild(messageDiv);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function removeChatMessage(id) {
+            const msg = document.getElementById('msg-' + id);
+            if (msg) msg.remove();
+        }
+
+        // Initialize on load
+        window.addEventListener('load', loadData);
+    </script>
+
+    <footer style="text-align:center; padding:18px; color:rgba(255,255,255,0.95); margin-top:28px;">
+      © 2025 Dr. Bharath Krishnan — Licensed under the MIT License. Feel free to use, modify, and share.
+    </footer>
+    
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/service-worker.js')
+      .then(() => console.log('Service Worker registered'))
+      .catch(err => console.log('SW registration failed:', err));
+  });
+}
+</script>
+
+</body>
+</html>
